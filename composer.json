@@ -1,0 +1,24 @@
+{
+  "name": "thomasdcodes/pdo-messenger-transport",
+  "description": "Gives the possibility to use the symfony messenger transport with a pdo connected database.",
+  "keywords": ["symfony","messenger", "transport", "symfony messenger transport","pdo transport"],
+  "type": "symfony-bundle",
+  "version": "0.1.0",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thomas Deutschländer",
+      "email": "me@thomasd.codes"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "symfony/framework-bundle": "^7.0",
+    "symfony/messenger": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tdc\\PdoMessengerTransport\\": "./src"
+    }
+  }
+}
