@@ -4,26 +4,31 @@ declare(strict_types=1);
 
 namespace Tdc\PdoMessengerTransport\Transport;
 
-use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportFactoryInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
-#[AsTaggedItem('messenger.transport_factory')]
 final class PdoTransportFactory implements TransportFactoryInterface
 {
     public function __construct(
-        private \PDO $pdo,
+        private ?\PDO $pdo = null,
+        private string $tableName = 'messenger_messages',
     ) {
     }
 
     public function createTransport(string $dsn, array $options, SerializerInterface $serializer): TransportInterface
     {
         $queueName = $options['queue_name'] ?? 'default';
+        $tableName = $options['table_name'] ?? $this->tableName;
+        $pdo = $this->pdo;
+
+        if (!$pdo instanceof \PDO) {
+            throw new \InvalidArgumentException('You must provide a PDO instance or configure one in the transport factory.');
+        }
 
         return new PdoTransport(
-            new PdoSender($this->pdo, $serializer, $queueName),
-            new PdoReceiver($this->pdo, $serializer, $queueName),
+            new PdoSender($pdo, $serializer, $queueName, $tableName),
+            new PdoReceiver($pdo, $serializer, $queueName, $tableName),
         );
     }
 

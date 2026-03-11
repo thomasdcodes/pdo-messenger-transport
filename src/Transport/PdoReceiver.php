@@ -15,6 +15,7 @@ final class PdoReceiver implements ReceiverInterface
         private \PDO $pdo,
         private SerializerInterface $serializer,
         private string $queueName = 'default',
+        private string $tableName = 'messenger_messages',
     ) {
     }
 
@@ -24,14 +25,17 @@ final class PdoReceiver implements ReceiverInterface
 
         try {
             $stmt = $this->pdo->prepare(
-                'SELECT id, body, headers
-                 FROM messenger_messages
-                 WHERE queue_name = :queue_name
-                   AND delivered_at IS NULL
-                   AND available_at <= :now
-                 ORDER BY id ASC
-                 LIMIT 1
-                 FOR UPDATE'
+                sprintf(
+                    'SELECT id, body, headers
+                     FROM %s
+                     WHERE queue_name = :queue_name
+                       AND delivered_at IS NULL
+                       AND available_at <= :now
+                     ORDER BY id ASC
+                     LIMIT 1
+                     FOR UPDATE',
+                    $this->tableName
+                )
             );
 
             $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
@@ -49,9 +53,12 @@ final class PdoReceiver implements ReceiverInterface
             }
 
             $update = $this->pdo->prepare(
-                'UPDATE messenger_messages
-                 SET delivered_at = :now
-                 WHERE id = :id'
+                sprintf(
+                    'UPDATE %s
+                     SET delivered_at = :now
+                     WHERE id = :id',
+                    $this->tableName
+                )
             );
 
             $update->execute([
@@ -86,7 +93,7 @@ final class PdoReceiver implements ReceiverInterface
     {
         $id = $this->getMessageId($envelope);
 
-        $stmt = $this->pdo->prepare('DELETE FROM messenger_messages WHERE id = :id');
+        $stmt = $this->pdo->prepare(sprintf('DELETE FROM %s WHERE id = :id', $this->tableName));
         $stmt->execute(['id' => $id]);
     }
 
@@ -94,7 +101,7 @@ final class PdoReceiver implements ReceiverInterface
     {
         $id = $this->getMessageId($envelope);
 
-        $stmt = $this->pdo->prepare('DELETE FROM messenger_messages WHERE id = :id');
+        $stmt = $this->pdo->prepare(sprintf('DELETE FROM %s WHERE id = :id', $this->tableName));
         $stmt->execute(['id' => $id]);
     }
 

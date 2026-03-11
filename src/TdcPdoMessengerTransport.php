@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Tdc\PdoMessengerTransport;
 
-class TdcPdoMessengerTransport
-{
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+class TdcPdoMessengerTransport extends Bundle
+{
 }

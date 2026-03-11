@@ -14,6 +14,7 @@ class PdoSender implements SenderInterface
         private \PDO $pdo,
         private SerializerInterface $serializer,
         private string $queueName = 'default',
+        private string $tableName = 'messenger_messages',
     ) {
     }
 
@@ -22,18 +23,28 @@ class PdoSender implements SenderInterface
         $encoded = $this->serializer->encode($envelope);
 
         $stmt = $this->pdo->prepare(
-            'INSERT INTO messenger_messages (body, headers, queue_name, available_at, created_at)
-             VALUES (:body, :headers, :queue_name, :available_at, :created_at)'
+            sprintf(
+                'INSERT INTO %s (body, headers, queue_name, available_at, created_at)
+                 VALUES (:body, :headers, :queue_name, :available_at, :created_at)',
+                $this->tableName
+            )
         );
 
-        $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $now = new \DateTimeImmutable();
+        $availableAt = $now->format('Y-m-d H:i:s');
+        $createdAt = $now->format('Y-m-d H:i:s');
+
+        $delayStamp = $envelope->last(\Symfony\Component\Messenger\Stamp\DelayStamp::class);
+        if ($delayStamp instanceof \Symfony\Component\Messenger\Stamp\DelayStamp) {
+            $availableAt = $now->modify(sprintf('+%d milliseconds', $delayStamp->getDelay()))->format('Y-m-d H:i:s');
+        }
 
         $stmt->execute([
             'body' => $encoded['body'],
             'headers' => json_encode($encoded['headers'], JSON_THROW_ON_ERROR),
             'queue_name' => $this->queueName,
-            'available_at' => $now,
-            'created_at' => $now,
+            'available_at' => $availableAt,
+            'created_at' => $createdAt,
         ]);
 
         return $envelope;
