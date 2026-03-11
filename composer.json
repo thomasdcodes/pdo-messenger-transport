@@ -13,6 +13,7 @@
   ],
   "require": {
     "php": ">=8.2",
+    "ext-pdo": "*",
     "symfony/framework-bundle": "^7.0",
     "symfony/messenger": "^7.0"
   },
