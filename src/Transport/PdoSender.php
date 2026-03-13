@@ -41,7 +41,7 @@ class PdoSender implements SenderInterface
 
         $stmt->execute([
             'body' => $encoded['body'],
-            'headers' => json_encode($encoded['headers'], JSON_THROW_ON_ERROR),
+            'headers' => json_encode($encoded['headers'] ?? [], JSON_THROW_ON_ERROR),
             'queue_name' => $this->queueName,
             'available_at' => $availableAt,
             'created_at' => $createdAt,

@@ -1,3 +1,6 @@
+# 0.1.9
+- Fixed "Undefined array key" error in `PdoSender` when using `PhpSerializer` by ensuring headers default to an empty array.
+
 # 0.1.8
 - Integrated service registration directly into the Bundle class using `AbstractBundle`. This ensures that the Extension logic is always executed by Symfony, even if naming conventions for separate Extension classes fail.
 
