@@ -34,8 +34,8 @@ CREATE TABLE messenger_messages (
 
 ## Configuration
 
-### 1. Configure PDO Service
-The bundle requires a `\PDO` instance to be registered in your service container. Ensure that a PDO instance is available for autowiring:
+### 1. Register the PDO Service
+The bundle requires a `\PDO` instance to be registered in your service container. You can define a new PDO service or use an existing one (e.g., from Doctrine):
 
 ```yaml
 # config/services.yaml
@@ -46,32 +46,26 @@ services:
             - "mysql:host=%env(DB_HOST)%;dbname=%env(DB_NAME)%"
             - "%env(DB_USER)%"
             - "%env(DB_PASSWORD)%"
-        calls:
-            - [setAttribute, [3, 2]] # PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION
 ```
 
-### 2. Configure Symfony Messenger
-In your messenger configuration, use the `pdoqueue://` DSN. You can specify the queue name and table name if needed.
+### 2. Global Bundle Configuration
+In your `config/packages/tdc_pdo_messenger_transport.yaml` (optional, but recommended if using a specific PDO service ID):
+
+```yaml
+tdc_pdo_messenger_transport:
+    pdo_service: 'PDO' # The ID of your PDO service
+    table_name: 'messenger_messages' # default
+```
+
+### 3. Configure Symfony Messenger
+In your messenger configuration, use the `pdoqueue://` DSN.
 
 ```yaml
 # config/packages/messenger.yaml
 framework:
     messenger:
         transports:
-            async:
-                dsn: 'pdoqueue://default'
-                options:
-                    queue_name: 'high_priority' # optional, defaults to 'default'
-                    table_name: 'messenger_messages' # optional, defaults to global bundle config
-```
-
-### 3. Global Bundle Configuration (Optional)
-You can set a default table name for all transports in a separate configuration file:
-
-```yaml
-# config/packages/tdc_pdo_messenger_transport.yaml
-tdc_pdo_messenger_transport:
-    table_name: 'messenger_messages'
+            async: 'pdoqueue://default'
 ```
 
 ### Usage

@@ -20,6 +20,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('messenger_messages')
                     ->info('The table name to use for the messenger.')
                 ->end()
+                ->scalarNode('pdo_service')
+                    ->defaultNull()
+                    ->info('The service ID of the PDO instance to use.')
+                ->end()
             ->end()
         ;
 
