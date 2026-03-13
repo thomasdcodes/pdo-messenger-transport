@@ -1,3 +1,6 @@
+# 0.1.8
+- Integrated service registration directly into the Bundle class using `AbstractBundle`. This ensures that the Extension logic is always executed by Symfony, even if naming conventions for separate Extension classes fail.
+
 # 0.1.7
 - Forced the PdoTransportFactory service to be public to prevent it from being removed during container optimization.
 - Added explicit Tag registration to ensure compatibility with Symfony's Messenger pass.
