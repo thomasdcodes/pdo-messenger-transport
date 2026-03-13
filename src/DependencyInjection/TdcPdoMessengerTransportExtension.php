@@ -17,6 +17,7 @@ class TdcPdoMessengerTransportExtension extends Extension
         $definition = new Definition(PdoTransportFactory::class);
         $definition->setAutoconfigured(true);
         $definition->setAutowired(true);
+        $definition->setPublic(true); // Ensure the service is not removed
         $definition->addTag('messenger.transport_factory');
 
         $tableName = 'messenger_messages';
