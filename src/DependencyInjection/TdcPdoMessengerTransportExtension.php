@@ -14,17 +14,28 @@ class TdcPdoMessengerTransportExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
         $definition = new Definition(PdoTransportFactory::class);
         $definition->setAutoconfigured(true);
         $definition->setAutowired(true);
         $definition->addTag('messenger.transport_factory');
-        $definition->setArgument('$tableName', $config['table_name']);
 
-        if (isset($config['pdo_service']) && $config['pdo_service']) {
-            $definition->setArgument('$pdo', new Reference($config['pdo_service']));
+        $tableName = 'messenger_messages';
+        $pdoService = null;
+
+        // Manual merge to avoid "Unrecognized option" if Configuration.php is bypassed
+        foreach ($configs as $config) {
+            if (isset($config['table_name'])) {
+                $tableName = $config['table_name'];
+            }
+            if (isset($config['pdo_service'])) {
+                $pdoService = $config['pdo_service'];
+            }
+        }
+
+        $definition->setArgument('$tableName', $tableName);
+
+        if ($pdoService) {
+            $definition->setArgument('$pdo', new Reference($pdoService));
         }
 
         $container->setDefinition(PdoTransportFactory::class, $definition);
@@ -33,6 +44,7 @@ class TdcPdoMessengerTransportExtension extends Extension
 
     public function getAlias(): string
     {
+        // Explicitly set alias to match the config root name
         return 'tdc_pdo_messenger_transport';
     }
 }

@@ -3,7 +3,7 @@
   "description": "Gives the possibility to use the symfony messenger transport with a pdo connected database.",
   "keywords": ["symfony","messenger", "transport", "symfony messenger transport","pdo transport"],
   "type": "symfony-bundle",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "authors": [
     {

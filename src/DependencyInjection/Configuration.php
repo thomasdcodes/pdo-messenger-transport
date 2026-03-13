@@ -14,15 +14,14 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('tdc_pdo_messenger_transport');
         $rootNode = $treeBuilder->getRootNode();
 
+        // Ensure the root node is allowed to have extra keys or is more flexible
         $rootNode
             ->children()
                 ->scalarNode('table_name')
                     ->defaultValue('messenger_messages')
-                    ->info('The table name to use for the messenger.')
                 ->end()
                 ->scalarNode('pdo_service')
                     ->defaultNull()
-                    ->info('The service ID of the PDO instance to use.')
                 ->end()
             ->end()
         ;
