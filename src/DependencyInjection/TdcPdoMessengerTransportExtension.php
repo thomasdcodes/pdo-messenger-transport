@@ -27,8 +27,8 @@ class TdcPdoMessengerTransportExtension extends Extension
             $definition->setArgument('$pdo', new Reference($config['pdo_service']));
         }
 
-        $container->setDefinition('tdc_pdo_messenger_transport.transport_factory', $definition);
-        $container->setAlias(PdoTransportFactory::class, 'tdc_pdo_messenger_transport.transport_factory');
+        $container->setDefinition(PdoTransportFactory::class, $definition);
+        $container->setAlias('tdc_pdo_messenger_transport.transport_factory', PdoTransportFactory::class);
     }
 
     public function getAlias(): string
