@@ -40,22 +40,30 @@ The bundle requires a `\PDO` instance to be registered in your service container
 ```yaml
 # config/services.yaml
 services:
+    # Option A: Create a new PDO service
     PDO:
         class: PDO
         arguments:
             - "mysql:host=%env(DB_HOST)%;dbname=%env(DB_NAME)%"
             - "%env(DB_USER)%"
             - "%env(DB_PASSWORD)%"
+
+    # Option B: Use Doctrine's connection
+    # PDO:
+    #     class: PDO
+    #     factory: ['@database_connection', 'getNativeConnection']
 ```
 
-### 2. Global Bundle Configuration
-In your `config/packages/tdc_pdo_messenger_transport.yaml` (optional, but recommended if using a specific PDO service ID):
+### 2. Global Bundle Configuration (Mandatory if you don't use autowiring for PDO)
+Create `config/packages/tdc_pdo_messenger_transport.yaml`:
 
 ```yaml
 tdc_pdo_messenger_transport:
-    pdo_service: 'PDO' # The ID of your PDO service
-    table_name: 'messenger_messages' # default
+    pdo_service: 'PDO' # The ID of your PDO service (from step 1)
+    table_name: 'messenger_messages' # optional, default: messenger_messages
 ```
+
+If you don't provide a `pdo_service`, the bundle will try to autowire a `\PDO` instance.
 
 ### 3. Configure Symfony Messenger
 In your messenger configuration, use the `pdoqueue://` DSN.
